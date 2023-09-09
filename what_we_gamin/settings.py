@@ -124,18 +124,18 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DATABASE_HOST    = os.environ.get('DATABASE_HOST', config('DATABASE_HOST'))
-DATABASE        = os.environ.get('DATABASE', config('DATABASE'))
-DATABASE_USER   = os.environ.get('DATABASE_USER', config('DATABASE_USER'))
-DATABASE_SECRET = os.environ.get('DATABASE_SECRET', config('DATABASE_SECRET'))
+# DATABASE_HOST    = os.environ.get('DATABASE_HOST', config('DATABASE_HOST'))
+# DATABASE        = os.environ.get('DATABASE', config('DATABASE'))
+# DATABASE_USER   = os.environ.get('DATABASE_USER', config('DATABASE_USER'))
+# DATABASE_SECRET = os.environ.get('DATABASE_SECRET', config('DATABASE_SECRET'))
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DATABASE,
-        'USER': DATABASE_USER,
-        'PASSWORD': DATABASE_SECRET,
-        'HOST': DATABASE_HOST,
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': DATABASE,
+#         'USER': DATABASE_USER,
+#         'PASSWORD': DATABASE_SECRET,
+#         'HOST': DATABASE_HOST,
+#         'PORT': '5432',
+#     }
+# }

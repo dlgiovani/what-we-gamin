@@ -2,15 +2,25 @@
 {% block content %}
     <div class="flex flex-col justify-center items-center">
         <h1 class="text-white font-semibold text-5xl mb-6">What we gamin'?</h1>
-
-        <div class="w-[69%] h-72 overflow-hidden flex justify-center items-center rounded-t-xl">
-            <img src="{{ game.image_url }}"
-                 onerror="this.src='https://http.cat/404';"
-                 class="w-full" />
-        </div>
-        <div class="p-4 bg-purple-950 rounded-b-xl w-[69%] h-48 text-center">
-            <h2 class="text-xl text-gray-200"><u>{{ game.name }}</u></h2>
-            <p class="text-gray-200">{{ game.description }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 justify-center items-center">
+            <a href='{{ game.url }}'>
+            <div class="w-full h-full overflow-hidden flex justify-center items-center md:rounded-l-xl bg-stone-700 hover:bg-orange-900/50 ease-in duration-200">
+                <img src="{{ game.image_url }}"
+                     onerror="this.src='https://http.cat/404';"
+                     class="w-auto" />
+            </div>
+            </a>
+            <div class="p-4 bg-purple-950 md:rounded-r-xl w-full h-full text-center">
+                <h2 class="text-xl text-gray-200 mb-6">
+                    <u>{{ game.name }}</u>
+                </h2>
+                <p class="text-gray-200">{{ game.summary }}</p>
+            </div>
+            <div class="bg-orange-900/50 rounded-lg flex gap-4 flex-wrap p-2 justify-around mt-2 col-span-2">
+                {% for mode in game.mode_names %}
+                    <p class="bg-orange-600 rounded-xl text-gray-200 p-2 text-sm">{{ mode }}</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock content %}
