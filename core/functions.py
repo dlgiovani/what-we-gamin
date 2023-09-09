@@ -31,7 +31,7 @@ def getToken():
 
         try:
             file.write(response.json()["access_token"])
-            token = file.read()
+            token = response.json()["access_token"]
         except:
             file.write('')
         file.close()
@@ -50,9 +50,13 @@ def query():
     if stuff != '':
         games = json.loads(stuff)
         game = random.choice(games)
-        game["mode_names"] = mode_names(game, wrapper)
-        game["screenshots_urls"] = screenshots_urls(game, wrapper)
-        game["image_url"] = getCover(game)
+        try:
+            game["mode_names"] = mode_names(game, wrapper)
+            game["screenshots_urls"] = screenshots_urls(game, wrapper)
+            game["image_url"] = getCover(game)
+        except Exception as e:
+            game = gameException(e)
+
     else:
         print(wrapper)
         query = f"""
@@ -79,11 +83,7 @@ def query():
                 json.dump(games, file)
 
         except Exception as e:
-            print(f'e: {e}')
-            game = {}
-            game["image_url"] = ''
-            game["name"] = 'Oops...'
-            game["summary"] = 'Oh no! An oopsie-doopsie ocuwwed >.< The little monkeys on our headquarters r working VEWY HAWD to solve the pwoblem UwU'
+            game = gameException(e)
 
     return game
 
@@ -127,3 +127,11 @@ def getCover(game):
         cover = ''
 
     return cover
+
+def gameException(e):
+    print(f'e: {e}')
+    game = {}
+    game["image_url"] = ''
+    game["name"] = 'Oops...'
+    game["summary"] = 'Oh no! An oopsie-doopsie ocuwwed >.< The little monkeys on our headquarters r working VEWY HAWD to solve the pwoblem UwU try reloading the page.'
+    return game
