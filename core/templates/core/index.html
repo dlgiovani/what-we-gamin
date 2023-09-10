@@ -1,7 +1,9 @@
 {% extends "core/master.html" %}
 {% block content %}
     <div class="flex flex-col justify-center items-center">
-        <h1 class="text-white font-semibold text-xl md:text-5xl mb-6">🎲What we gamin'?🎮</h1>
+        <a href="{% url 'core:index' %}">
+        <h1 class="text-white font-semibold text-xl md:text-5xl mb-6 hover:bg-indigo-900/75 p-4 rounded-xl ease-in duration-300">🎲What we gamin'?🎮</h1>
+        </a>
         <div class="md:grid md:grid-cols-2 justify-center items-center">
             <a href="{{ game.url }}">
                 <div class="w-full h-full overflow-hidden flex justify-center items-center rounded-t-xl md:rounded-none md:rounded-l-xl bg-stone-700 hover:bg-orange-900/50 ease-in duration-200">
