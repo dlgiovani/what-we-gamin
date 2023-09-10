@@ -23,7 +23,7 @@ def getToken():
     file = open(file_path_p, 'r')
     token = f'{file.read()}'
     file.close()
-    print(f'file {token}')
+
     if token == '':
         file = open(file_path_p, 'w')
         response = post(TOKEN_URL, data=data)
@@ -36,7 +36,6 @@ def getToken():
             file.write('')
         file.close()
 
-    print(f'token {token}')
     return token
 
 def getWrapper():
@@ -51,16 +50,13 @@ def query():
         games = json.loads(stuff)
         game = random.choice(games)
         try:
-            game["mode_names"] = mode_names(game, wrapper)
-            game["screenshots_urls"] = screenshots_urls(game, wrapper)
-            game["image_url"] = getCover(game)
+            game = getGameDetails(game, wrapper)
         except Exception as e:
             game = gameException(e)
 
     else:
-        print(wrapper)
         query = f"""
-        fields name, cover.image_id, summary, storyline, tags, game_modes, age_ratings, artworks, screenshots, url;
+        fields name, version_title, cover.image_id, summary, storyline, videos, tags, game_modes, age_ratings, artworks, screenshots, url, themes;
         where platforms = (6,14,3)
         & rating > 80
         & rating_count > 400
@@ -74,10 +70,7 @@ def query():
             games = json.loads(response.decode('utf-8'))
             game = random.choice(games)
 
-            game["mode_names"] = mode_names(game, wrapper)
-            game["screenshots_urls"] = screenshots_urls(game, wrapper)
-
-            game["image_url"] = getCover(game)
+            game = getGameDetails(game, wrapper)
         
             with open(file_path_f, 'w') as file:
                 json.dump(games, file)
@@ -104,11 +97,44 @@ def mode_names(game, wrapper):
         return []
     return names
 
+def theme_names(game, wrapper):
+    modes = []
+    if "themes" in game:
+        gt_query = f'fields name; where id = ({",".join(map(str, game["themes"]))});'
+        response = wrapper.api_request(endpoint="themes", query=gt_query)
+
+        themes = json.loads(response.decode('utf-8'))
+
+        names = []
+        for theme in themes:
+            if theme["name"] != '':
+                names.append(theme["name"])
+    else:
+        return []
+    return names
+
+def genre_names(game, wrapper):
+    modes = []
+    if "genres" in game:
+        gt_query = f'fields name; where id = ({",".join(map(str, game["genres"]))});'
+        response = wrapper.api_request(endpoint="genres", query=gt_query)
+
+        themes = json.loads(response.decode('utf-8'))
+
+        names = []
+        for theme in themes:
+            if theme["name"] != '':
+                names.append(theme["name"])
+    else:
+        return []
+    return names
+
+
 def screenshots_urls(game, wrapper):
     shots = []
     if "screenshots" in game:
-        gm_query = f'fields url; where id = ({",".join(map(str, game["screenshots"]))});'
-        response = wrapper.api_request(endpoint="screenshots", query=gm_query)
+        sc_query = f'fields url; where id = ({",".join(map(str, game["screenshots"]))});'
+        response = wrapper.api_request(endpoint="screenshots", query=sc_query)
 
         shots = json.loads(response.decode('utf-8'))
 
@@ -118,6 +144,7 @@ def screenshots_urls(game, wrapper):
                 urls.append(shot["url"])
     else:
         return []
+
     return urls
 
 def getCover(game):
@@ -128,10 +155,55 @@ def getCover(game):
 
     return cover
 
+def getVideo(game, wrapper):
+    url = ''
+    if "videos" in game:
+        video = random.choice(game["videos"])
+        vd_query = f'fields video_id; where id = {video};'
+        response = wrapper.api_request(endpoint="game_videos", query=vd_query)
+
+        vd = json.loads(response.decode('utf-8'))
+
+        try:
+            url = 'https://www.youtube.com/embed/' + (vd["video_id"] if "video_id" in vd else [x["video_id"] for x in vd][0])
+        except:
+            url = ''
+
+    return url
+
+def getArtworks(game, wrapper):
+    artworks = []
+    if "artworks" in game:
+        sc_query = f'fields url; where id = ({",".join(map(str, game["artworks"]))});'
+        response = wrapper.api_request(endpoint="artworks", query=sc_query)
+
+        artworks = json.loads(response.decode('utf-8'))
+
+        urls = []
+        for shot in artworks:
+            if shot["url"] != '':
+                urls.append(shot["url"])
+    else:
+        return []
+
+    return urls
+
+
+def getGameDetails(game, wrapper):
+    game["mode_names"]          = mode_names(game, wrapper)
+    game["theme_names"]         = theme_names(game, wrapper)
+    game["genre_names"]         = genre_names(game, wrapper)
+    game["screenshots_urls"]    = screenshots_urls(game, wrapper)
+    game["image_url"]           = getCover(game)
+    game["video_url"]           = getVideo(game, wrapper)
+    game["artwork_urls"]        = getArtworks(game, wrapper)
+
+    return game
+
 def gameException(e):
     print(f'e: {e}')
     game = {}
     game["image_url"] = ''
     game["name"] = 'Oops...'
-    game["summary"] = 'Oh no! An oopsie-doopsie ocuwwed >.< The little monkeys on our headquarters r working VEWY HAWD to solve the pwoblem UwU try reloading the page.'
+    game["summary"] = 'Oh no! An oopsie-doopsie ocuwwed >.< The little monkeys on our headquarters r working VEWY HAWD to solve the pwoblem UwU ***try reloading the page.***'
     return game
